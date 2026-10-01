@@ -1,143 +1,259 @@
-# MiniBlog API
+# 📝 MiniBlog REST API
 
-API REST para gestionar autores y posts, desarrollada con Node.js + Express 5 + PostgreSQL.
+API REST para gestionar **autores y publicaciones**, desarrollada con Node.js, Express y PostgreSQL.
 
-## Stack
+El proyecto implementa operaciones CRUD, persistencia en base de datos, manejo de errores, documentación con OpenAPI/Swagger y una suite de pruebas automatizadas.
 
-- Node.js v18+
+## 📸 Documentación de la API
+
+![Swagger UI](docs/swagger.png)
+
+## 🚀 Funcionalidades
+
+### Autores
+- Crear autores.
+- Obtener todos los autores.
+- Obtener un autor por ID.
+- Actualizar autores.
+- Eliminar autores.
+
+### Publicaciones
+- Crear publicaciones.
+- Obtener todas las publicaciones.
+- Obtener una publicación por ID.
+- Obtener publicaciones por autor.
+- Actualizar publicaciones.
+- Eliminar publicaciones.
+
+### API
+- Persistencia con PostgreSQL.
+- Validación y manejo de errores.
+- Respuestas HTTP `400` y `404`.
+- Documentación interactiva con Swagger UI.
+- Especificación OpenAPI.
+- Datos iniciales mediante seed.
+- Tests automatizados.
+
+## 🛠️ Tecnologías
+
+- Node.js
 - Express 5
-- PostgreSQL v15+ (driver `pg`)
-- Jest + Supertest (testing)
-- OpenAPI + Swagger UI (documentacion)
+- PostgreSQL
+- `pg`
+- Jest
+- Supertest
+- OpenAPI
+- Swagger UI
+- dotenv
 
-## Instalacion y ejecucion local
+## 🧪 Testing
 
-1. Clonar el repositorio:
-```bash
-   git clone https://github.com/GonzaloB1/ProyectoM2_GonzaloBastias-.git
-   cd ProyectoM2_GonzaloBastias-
-```
+El proyecto cuenta con **19 pruebas automatizadas** desarrolladas con Jest y Supertest.
 
-2. Instalar dependencias:
-```bash
-   npm install
-```
+Las pruebas cubren:
 
-3. Crear la base de datos local:
-```bash
-   psql -U postgres -c "CREATE DATABASE miniblog"
-```
+- CRUD de autores.
+- CRUD de publicaciones.
+- Validaciones.
+- Casos de error `400`.
+- Recursos inexistentes `404`.
 
-4. Crear las tablas y cargar los datos de prueba (el script incluye schema + seed):
-```bash
-   psql -U postgres -d miniblog -f src/db/setup.sql
-```
-
-5. Configurar variables de entorno:
-```bash
-   cp .env.example .env
-   # Editar .env con tus credenciales
-```
-
-6. Iniciar el servidor:
-```bash
-   npm start
-```
-
-El servidor corre en http://localhost:3000
-
-## Variables de entorno
-
-```env
-PORT=3000
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=miniblog
-DB_USER=postgres
-DB_PASSWORD=tu_password
-NODE_ENV=development
-```
-
-## Ejecutar tests
+Ejecutar los tests:
 
 ```bash
 npm test
 ```
 
-19/19 tests pasando (Jest + Supertest).
+Resultado:
 
-## Endpoints disponibles
+```text
+19/19 tests passing
+```
+
+## 📚 Documentación OpenAPI
+
+La especificación completa se encuentra en:
+
+```text
+docs/openapi.yaml
+```
+
+Con el servidor ejecutándose, Swagger UI está disponible en:
+
+```text
+http://localhost:3000/api-docs
+```
+
+## 🔗 Endpoints
 
 ### Health
-- GET    /health
 
-### Authors
-- GET    /authors
-- GET    /authors/:id
-- POST   /authors
-- PUT    /authors/:id
-- DELETE /authors/:id
-
-### Posts
-- GET    /posts
-- GET    /posts/:id
-- GET    /posts/author/:authorId
-- POST   /posts
-- PUT    /posts/:id
-- DELETE /posts/:id
-
-## Documentacion OpenAPI
-
-El archivo `docs/openapi.yaml` contiene la especificacion completa.
-
-Se puede visualizar de dos formas:
-
-- **Swagger UI en vivo (recomendado):** https://proyectom2gonzalobastias-production.up.railway.app/api-docs
-- **Local:** correr el servidor (`npm start`) y entrar a `http://localhost:3000/api-docs`
-- **Alternativa sin levantar el servidor:** [ver en Swagger Editor](https://editor.swagger.io/?url=https://raw.githubusercontent.com/GonzaloB1/ProyectoM2_GonzaloBastias-/main/docs/openapi.yaml) (carga el archivo automaticamente desde el repo)
-
-## Deploy en Railway
-
-### URL publica
-https://proyectom2gonzalobastias-production.up.railway.app
-
-### Pasos para reproducir el deploy
-
-1. Crear cuenta en [railway.app](https://railway.app)
-2. Nuevo proyecto → **Deploy from GitHub repo**
-3. Agregar servicio **PostgreSQL** desde el marketplace
-4. Configurar variables de entorno en el servicio de la app usando referencias a Postgres:
-
-   | Variable      | Valor                        |
-   |---------------|------------------------------|
-   | DB_HOST       | `${{Postgres.PGHOST}}`       |
-   | DB_PORT       | `${{Postgres.PGPORT}}`       |
-   | DB_NAME       | `${{Postgres.PGDATABASE}}`   |
-   | DB_USER       | `${{Postgres.PGUSER}}`       |
-   | DB_PASSWORD   | `${{Postgres.PGPASSWORD}}`   |
-   | NODE_ENV      | `production`                 |
-
-5. Hacer click en **Deploy**
-6. Una vez deployado, correr el script contra la base de produccion usando la URL publica de Postgres (incluye schema + seed):
-```bash
-   psql "postgresql://USER:PASSWORD@HOST:PORT/railway" -f src/db/setup.sql
+```http
+GET /health
 ```
-   *(Las credenciales se obtienen de la variable `DATABASE_PUBLIC_URL` en el servicio Postgres de Railway)*
 
-7. Railway redespliega automaticamente con cada push a `main`
+### Autores
 
-## Uso de IA
+```http
+GET    /authors
+GET    /authors/:id
+POST   /authors
+PUT    /authors/:id
+DELETE /authors/:id
+```
 
-Se utilizo Claude (Anthropic) como asistente durante todo el desarrollo del proyecto. A continuacion el detalle de los prompts mas relevantes y su influencia:
+### Publicaciones
 
-| Prompt utilizado | Influencia en el desarrollo |
-|---|---|
-| "Vamos a hacerlo paso a paso, tengo que guardarlo en GitHub con commits" | Definio el flujo de trabajo: commits separados por etapa (SQL, arrays en memoria, conexion real a DB, middleware de errores, tests, docs OpenAPI, deploy) |
-| "Diagnostico de IDs desincronizados en Postgres luego de truncar tablas" | Identifico que las secuencias SERIAL no se reinician con TRUNCATE simple; se resolvio con `TRUNCATE ... RESTART IDENTITY CASCADE` |
-| "Revision de mensaje extrano de la libreria dotenv en consola" | Se confirmo que era un mensaje promocional inofensivo de dotenv v17 y no un riesgo de seguridad |
-| "Guia paso a paso para deploy en Railway" | Asistencia en la creacion del servicio Postgres, conexion del repo de GitHub, configuracion de variables de entorno usando referencias entre servicios (`${{Postgres.PGHOST}}`, etc.), generacion de dominio publico y carga del schema/seed contra la base de produccion |
-| "Generar suite de tests con Jest y Supertest" | Se crearon 19 tests cubriendo CRUD y casos de error (400/404) para authors y posts |
-| "Como podemos hacer el de Swagger" | Integracion de Swagger UI en `/api-docs` usando `swagger-ui-express` y `yamljs`, sirviendo la documentacion en vivo desde la propia API en lugar de solo un archivo estatico |
-| "Mejorar lo que esta en insuficiencia segun auditoria recibida" | Se detecto que `setup.sql` habia quedado sin `CREATE TABLE` tras una limpieza anterior de archivos duplicados; se unifico schema + seed en un unico `setup.sql` reejecutable, se corrigio el placeholder de URL en `docs/openapi.yaml` y se agrego `NODE_ENV` a `.env.example` |
+```http
+GET    /posts
+GET    /posts/:id
+GET    /posts/author/:authorId
+POST   /posts
+PUT    /posts/:id
+DELETE /posts/:id
+```
 
-Cada paso fue ejecutado, probado manualmente con Postman/Thunder Client o PowerShell, y validado antes de avanzar al siguiente commit.
+## ⚙️ Instalación local
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/GonzaloB1/blog-api-rest.git
+cd blog-api-rest
+```
+
+### 2. Instalar dependencias
+
+```bash
+npm install
+```
+
+### 3. Crear la base de datos
+
+```sql
+CREATE DATABASE miniblog;
+```
+
+### 4. Crear tablas y cargar datos iniciales
+
+Desde PostgreSQL:
+
+```sql
+\i /ruta/al/proyecto/blog-api-rest/src/db/setup.sql
+```
+
+El archivo `setup.sql` contiene el esquema y los datos iniciales necesarios para ejecutar el proyecto.
+
+### 5. Configurar variables de entorno
+
+Crear un archivo `.env`:
+
+```env
+PORT=3000
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=miniblog
+DB_USER=tu_usuario
+DB_PASSWORD=tu_password
+
+NODE_ENV=development
+```
+
+### 6. Iniciar la API
+
+```bash
+npm start
+```
+
+Servidor:
+
+```text
+http://localhost:3000
+```
+
+Swagger:
+
+```text
+http://localhost:3000/api-docs
+```
+
+## 🗄️ Base de datos
+
+La aplicación utiliza PostgreSQL para almacenar autores y publicaciones.
+
+El script:
+
+```text
+src/db/setup.sql
+```
+
+permite crear las tablas y cargar los datos iniciales necesarios para probar la API.
+
+## 🧠 Decisiones técnicas
+
+### PostgreSQL
+
+Se utilizó PostgreSQL como base de datos relacional para mantener persistencia real de autores y publicaciones.
+
+### Script de inicialización
+
+El esquema y los datos de prueba se centralizaron en `setup.sql`, simplificando la preparación del entorno local.
+
+### Swagger / OpenAPI
+
+La API cuenta con documentación interactiva mediante Swagger UI, permitiendo visualizar y probar los endpoints desde el navegador.
+
+### Testing
+
+Jest y Supertest permiten probar los endpoints HTTP y validar tanto operaciones exitosas como distintos casos de error.
+
+## ☁️ Deploy
+
+El proyecto fue desplegado originalmente utilizando Railway junto con una instancia PostgreSQL.
+
+Railway se configuró para utilizar las variables de conexión proporcionadas por el servicio PostgreSQL y realizar despliegues desde el repositorio de GitHub.
+
+> El despliegue público puede no estar disponible actualmente. El proyecto puede ejecutarse completamente de forma local siguiendo los pasos de instalación.
+
+## 🤖 Uso de IA
+
+Durante el desarrollo se utilizó **Claude (Anthropic)** como asistente para apoyar distintas etapas del proyecto.
+
+Entre los principales usos:
+
+- Diseño progresivo de la API y flujo de trabajo con Git.
+- Diagnóstico de secuencias `SERIAL` de PostgreSQL.
+- Configuración de PostgreSQL y variables de entorno.
+- Creación y mejora de la suite de pruebas.
+- Integración de Swagger UI y OpenAPI.
+- Configuración del despliegue en Railway.
+- Revisión del script `setup.sql`.
+- Resolución de errores durante el desarrollo.
+
+Las soluciones propuestas fueron implementadas y posteriormente verificadas mediante pruebas automatizadas y pruebas manuales de la API.
+
+## 📚 Aprendizajes
+
+Este proyecto permitió profundizar en:
+
+- Diseño de APIs REST.
+- Node.js y Express.
+- PostgreSQL y SQL.
+- Operaciones CRUD.
+- Manejo de errores HTTP.
+- Variables de entorno.
+- Testing de APIs.
+- Jest y Supertest.
+- Documentación OpenAPI.
+- Swagger UI.
+- Deploy de backend y base de datos.
+
+## 👨‍💻 Autor
+
+**Gonzalo Bastias**
+
+Frontend Developer Jr. | React · TypeScript · Node.js
+
+- GitHub: GonzaloB1
+- LinkedIn: Gonzalo Bastias
